@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createPasswordResetToken } from '@/lib/tokens'
-import { resend } from '@/lib/resend'
-import { PasswordResetEmail } from '@/components/emails/PasswordResetEmail'
+import { sendPasswordResetEmail } from '@/lib/email'
 import { ForgotPasswordSchema } from '@/lib/validations'
-
 import { checkRateLimit } from '@/lib/ratelimit'
 
 export async function POST(req: NextRequest) {
@@ -53,12 +51,7 @@ export async function POST(req: NextRequest) {
     const resetLink = `${process.env.NEXTAUTH_URL}/reset-password/${token.token}`
 
     // Send Email
-    await resend.emails.send({
-      from: 'SecureGate <security@resend.dev>',
-      to: email,
-      subject: 'Reset your password',
-      react: PasswordResetEmail({ resetLink }),
-    })
+    await sendPasswordResetEmail(email, resetLink)
 
     return NextResponse.json(
       { message: 'If an account exists, a reset link has been sent.' },

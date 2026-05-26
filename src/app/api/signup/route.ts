@@ -3,8 +3,7 @@ import { SignUpSchema } from '@/lib/validations'
 import { hashPassword } from '@/lib/password'
 import { prisma } from '@/lib/prisma'
 import { createVerificationToken } from '@/lib/tokens'
-import { resend } from '@/lib/resend'
-import { VerificationEmail } from '@/components/emails/VerificationEmail'
+import { sendVerificationEmail } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,12 +34,7 @@ export async function POST(req: NextRequest) {
         const token = await createVerificationToken(lowercaseEmail)
         const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
         
-        await resend.emails.send({
-          from: 'SecureGate <onboarding@resend.dev>',
-          to: lowercaseEmail,
-          subject: 'Verify your email address',
-          react: VerificationEmail({ verificationLink }),
-        })
+        await sendVerificationEmail(lowercaseEmail, verificationLink)
         
         return NextResponse.json(
           { message: 'Check your email to verify your account.' },
@@ -69,12 +63,7 @@ export async function POST(req: NextRequest) {
     const token = await createVerificationToken(lowercaseEmail)
     const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
         
-    await resend.emails.send({
-      from: 'SecureGate <onboarding@resend.dev>',
-      to: lowercaseEmail,
-      subject: 'Verify your email address',
-      react: VerificationEmail({ verificationLink }),
-    })
+    await sendVerificationEmail(lowercaseEmail, verificationLink)
 
     return NextResponse.json(
       { message: 'Check your email to verify your account.' },

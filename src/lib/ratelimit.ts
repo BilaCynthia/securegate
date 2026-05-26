@@ -1,53 +1,41 @@
-import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
-
-// Ensure we have a singleton Redis connection to prevent connection exhaustion.
-// Redis.fromEnv() automatically uses UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
-// We provide a fallback mock for development if they are missing so it fails loudly 
-// but gracefully in a controlled manner, or we can enforce existence.
-
-const getRedisClient = () => {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production.')
-    }
-    console.warn('Upstash Redis environment variables missing. Rate limiting will fail closed.')
-    // Return a dummy object if missing in dev to allow the fail-closed logic to trigger
-    return {} as any
-  }
-  return Redis.fromEnv()
-}
-
-const redis = getRedisClient()
-
-export const loginRateLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, '10 m'),
-  analytics: true,
-  prefix: 'rate_limit:signin',
-})
-
-export const forgotPasswordRateLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, '10 m'),
-  analytics: true,
-  prefix: 'rate_limit:forgot_password',
-})
-
 export async function checkRateLimit(
   ip: string,
   identifier: 'login' | 'forgot-password'
 ): Promise<{ success: boolean; remaining: number }> {
+  const redisConfigured = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  
+  if (!redisConfigured) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('Rate limiting not configured. Blocking request.')
+      return { success: false, remaining: 0 }
+    }
+    console.warn('Rate limiting not configured in dev — allowing request.')
+    return { success: true, remaining: 999 }
+  }
+
   try {
-    const limiter = identifier === 'login' ? loginRateLimit : forgotPasswordRateLimit
-    const { success, remaining } = await limiter.limit(ip)
+    const { Ratelimit } = await import('@upstash/ratelimit')
+    const { Redis } = await import('@upstash/redis')
+    
+    const redis = Redis.fromEnv()
+    
+    const prefix = identifier === 'login' ? 'rate_limit:signin' : 'rate_limit:forgot_password'
+    
+    const ratelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '10 m'),
+      analytics: true,
+      prefix,
+    })
+
+    const { success, remaining } = await ratelimit.limit(ip)
     return { success, remaining }
   } catch (error) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('Rate limiting failed or Redis is unavailable:', error)
+      console.error('Rate limiting failed:', error)
       return { success: false, remaining: 0 }
     }
-    console.warn('Rate limiting unavailable in dev — allowing request through.')
+    console.warn('Rate limiting failed in dev — allowing request.', error)
     return { success: true, remaining: 999 }
   }
 }

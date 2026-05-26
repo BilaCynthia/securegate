@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createVerificationToken } from '@/lib/tokens'
-import { resend } from '@/lib/resend'
-import { VerificationEmail } from '@/components/emails/VerificationEmail'
+import { sendVerificationEmail } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,12 +29,7 @@ export async function POST(req: NextRequest) {
     const token = await createVerificationToken(email)
     const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
     
-    await resend.emails.send({
-      from: 'SecureGate <onboarding@resend.dev>',
-      to: email,
-      subject: 'Verify your email address',
-      react: VerificationEmail({ verificationLink }),
-    })
+    await sendVerificationEmail(email, verificationLink)
 
     return NextResponse.json(
       { message: 'If an unverified account with this email exists, a new verification link has been sent.' },

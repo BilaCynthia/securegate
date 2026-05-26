@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
 
 /* ─────────────────────────────────────────────
    Design Token Import
@@ -293,10 +291,21 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.strength__bar--weak   { background-color: var(--color-strength-weak); }
-.strength__bar--fair   { background-color: var(--color-strength-fair); }
-.strength__bar--good   { background-color: var(--color-strength-good); }
-.strength__bar--strong { background-color: var(--color-strength-strong); }
+.strength__bar--weak {
+  background-color: var(--color-strength-weak);
+}
+
+.strength__bar--fair {
+  background-color: var(--color-strength-fair);
+}
+
+.strength__bar--good {
+  background-color: var(--color-strength-good);
+}
+
+.strength__bar--strong {
+  background-color: var(--color-strength-strong);
+}
 
 .strength__label {
   font-size: var(--typo-body-small-font-size);
@@ -304,10 +313,21 @@ body {
   font-weight: 500;
 }
 
-.strength__label--weak   { color: var(--color-strength-weak); }
-.strength__label--fair   { color: var(--color-strength-fair); }
-.strength__label--good   { color: var(--color-strength-good); }
-.strength__label--strong { color: var(--color-strength-strong); }
+.strength__label--weak {
+  color: var(--color-strength-weak);
+}
+
+.strength__label--fair {
+  color: var(--color-strength-fair);
+}
+
+.strength__label--good {
+  color: var(--color-strength-good);
+}
+
+.strength__label--strong {
+  color: var(--color-strength-strong);
+}
 
 /* ─────────────────────────────────────────────
    Button System
@@ -330,6 +350,7 @@ body {
   cursor: pointer;
   transition: background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
   -webkit-appearance: none;
+  appearance: none;
   user-select: none;
   text-decoration: none;
   white-space: nowrap;
@@ -370,7 +391,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─────────────────────────────────────────────

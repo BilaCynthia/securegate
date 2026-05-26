@@ -1,0 +1,31 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@tailwind",
+      "description": "Tailwind CSS directive — injects Tailwind's base, components, and utilities layers",
+      "status": "standard",
+      "references": [
+        {
+          "name": "Tailwind CSS Functions & Directives",
+          "url": "https://tailwindcss.com/docs/functions-and-directives"
+        }
+      ]
+    },
+    {
+      "name": "@apply",
+      "description": "Inline Tailwind classes into custom CSS",
+      "status": "standard"
+    },
+    {
+      "name": "@layer",
+      "description": "Tailwind CSS @layer directive",
+      "status": "standard"
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS @config directive — references a Tailwind config file",
+      "status": "standard"
+    }
+  ]
+}
