@@ -50,8 +50,7 @@ export default function SignUpPage() {
       } else if (!res.ok) {
         setGlobalError(data.message ?? 'Something went wrong. Please try again.')
       } else {
-        const linkParam = data.verificationLink ? `&link=${encodeURIComponent(data.verificationLink)}` : ''
-        router.push(`/verify-email?email=${encodeURIComponent(email)}${linkParam}`)
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`)
       }
     } catch {
       setGlobalError('Unable to connect. Please check your connection and try again.')

@@ -5,11 +5,7 @@ export async function checkRateLimit(
   const redisConfigured = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
   
   if (!redisConfigured) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('Rate limiting not configured. Blocking request.')
-      return { success: false, remaining: 0 }
-    }
-    console.warn('Rate limiting not configured in dev — allowing request.')
+    console.warn('Rate limiting not configured — allowing request.')
     return { success: true, remaining: 999 }
   }
 
@@ -21,9 +17,16 @@ export async function checkRateLimit(
     
     const prefix = identifier === 'login' ? 'rate_limit:signin' : 'rate_limit:forgot_password'
     
+    const limits = {
+      'login': { max: 5, window: '10 m' as const },
+      'forgot-password': { max: 3, window: '1 h' as const },
+    }
+
+    const { max, window } = limits[identifier]
+
     const ratelimit = new Ratelimit({
       redis,
-      limiter: Ratelimit.slidingWindow(5, '10 m'),
+      limiter: Ratelimit.slidingWindow(max, window),
       analytics: true,
       prefix,
     })
@@ -31,11 +34,7 @@ export async function checkRateLimit(
     const { success, remaining } = await ratelimit.limit(ip)
     return { success, remaining }
   } catch (error) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('Rate limiting failed:', error)
-      return { success: false, remaining: 0 }
-    }
-    console.warn('Rate limiting failed in dev — allowing request.', error)
+    console.warn('Rate limiting failed — allowing request.', error)
     return { success: true, remaining: 999 }
   }
 }

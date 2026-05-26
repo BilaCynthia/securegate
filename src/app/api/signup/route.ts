@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         await sendVerificationEmail(lowercaseEmail, verificationLink)
         
         return NextResponse.json(
-          { message: 'Check your email to verify your account.', verificationLink },
+          { message: 'Check your email to verify your account.' },
           { status: 201 }
         )
       }
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     await sendVerificationEmail(lowercaseEmail, verificationLink)
 
     return NextResponse.json(
-      { message: 'Check your email to verify your account.', verificationLink },
+      { message: 'Check your email to verify your account.' },
       { status: 201 }
     )
   } catch (error: unknown) {

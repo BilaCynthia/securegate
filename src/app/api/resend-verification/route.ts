@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     await sendVerificationEmail(email, verificationLink)
 
     return NextResponse.json(
-      { message: 'If an unverified account with this email exists, a new verification link has been sent.', verificationLink },
+      { message: 'If an unverified account with this email exists, a new verification link has been sent.' },
       { status: 200 }
     )
   } catch {

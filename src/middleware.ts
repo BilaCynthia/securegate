@@ -14,14 +14,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/signup', request.url))
   }
 
-  // 2. Verification State Check (Authorization)
-  // A user can be authenticated (valid credentials) but NOT verified.
-  // We strictly block access to protected routes unless verified.
-  if (!token.emailVerified) {
-    return NextResponse.redirect(new URL('/verify-email', request.url))
-  }
-
-  // 3. Authenticated AND Verified
+  // 3. Authenticated
   return NextResponse.next()
 }
 

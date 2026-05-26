@@ -1,0 +1,21 @@
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 4.2s
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 953ms (301 modules)
+ POST /api/auth/callback/credentials 200 in 3024ms
+ GET /api/auth/csrf 200 in 29ms
+ GET /api/auth/csrf 200 in 26ms
+ POST /api/auth/callback/credentials 200 in 16ms
+ GET /api/auth/csrf 200 in 19ms
+ POST /api/auth/callback/credentials 401 in 2541ms
+ GET /api/auth/providers 200 in 23ms
+ GET /api/auth/providers 200 in 21ms
+ GET /api/auth/csrf 200 in 14ms
+ ○ Compiling /verify-email ...
+ ✓ Compiled /verify-email in 5.1s (805 modules)
+ GET /verify-email 200 in 5491ms
+[?25h

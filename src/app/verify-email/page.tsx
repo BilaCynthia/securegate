@@ -13,7 +13,6 @@ function VerifyEmailPrompt() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [devLink, setDevLink] = useState(searchParams.get('link') ?? '')
 
   async function handleResend() {
     setError(null)
@@ -27,9 +26,6 @@ function VerifyEmailPrompt() {
       })
 
       const data = await res.json()
-      if (data.verificationLink) {
-        setDevLink(data.verificationLink)
-      }
       if (res.ok) {
         setSent(true)
       } else {
@@ -59,14 +55,6 @@ function VerifyEmailPrompt() {
           </p>
 
           {error && <Alert variant="error">{error}</Alert>}
-
-          {devLink && (
-            <div style={{ marginTop: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '6px', fontSize: '13px', wordBreak: 'break-all' }}>
-              <strong>Dev mode:</strong> Email delivery unavailable.{' '}
-              <a href={devLink} style={{ color: 'var(--color-primary)' }}>Click here</a> or copy this link to verify:
-              <div style={{ marginTop: '4px', fontFamily: 'monospace' }}>{devLink}</div>
-            </div>
-          )}
 
           {sent ? (
             <p className="status-card__body" style={{ marginTop: '8px', color: 'var(--color-success)' }}>
