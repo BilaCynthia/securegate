@@ -1,27 +1,490 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────
+   Design Token Import
+   Source of truth: tokens.css
+   All color, typography, spacing values flow
+   from these CSS custom properties only.
+───────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color Roles */
+  --color-primary: hsl(221, 83%, 50%);
+  --color-on-primary: hsl(0, 0%, 100%);
+  --color-primary-container: hsl(228, 100%, 85%);
+  --color-on-primary-container: hsl(219, 100%, 34%);
+  --color-secondary: hsl(223, 14%, 39%);
+  --color-on-secondary: hsl(0, 0%, 100%);
+  --color-surface: hsl(231, 100%, 99%);
+  --color-on-surface: hsl(213, 49%, 12%);
+  --color-surface-variant: hsl(215, 42%, 90%);
+  --color-on-surface-variant: hsl(210, 14%, 28%);
+  --color-surface-container: hsl(221, 100%, 95%);
+  --color-surface-container-low: hsl(221, 100%, 97%);
+  --color-surface-container-lowest: hsl(0, 0%, 100%);
+  --color-outline: hsl(213, 13%, 68%);
+  --color-outline-variant: hsl(215, 42%, 90%);
+  --color-background: hsl(260, 100%, 99%);
+  --color-on-background: hsl(213, 49%, 12%);
+  --color-error-text: hsl(0, 72%, 42%);
+  --color-error-surface: hsl(0, 86%, 97%);
+  --color-error-border: hsl(0, 86%, 88%);
+  --color-success-text: hsl(145, 63%, 28%);
+  --color-success-surface: hsl(145, 60%, 95%);
+  --color-success-border: hsl(145, 60%, 80%);
+  --color-warning-text: hsl(30, 90%, 35%);
+
+  /* Strength indicator colors */
+  --color-strength-weak: hsl(0, 72%, 55%);
+  --color-strength-fair: hsl(36, 90%, 50%);
+  --color-strength-good: hsl(210, 80%, 50%);
+  --color-strength-strong: hsl(145, 63%, 38%);
+
+  /* Typography */
+  --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --typo-headline-small-font-size: 28px;
+  --typo-headline-small-font-weight: 500;
+  --typo-headline-small-letter-spacing: -0.336px;
+  --typo-headline-small-line-height: 39px;
+  --typo-title-medium-font-size: 24px;
+  --typo-title-medium-font-weight: 500;
+  --typo-body-medium-font-size: 16px;
+  --typo-body-medium-line-height: 24px;
+  --typo-body-small-font-size: 12px;
+  --typo-body-small-line-height: 18px;
+  --typo-label-small-font-size: 16px;
+  --typo-label-small-font-weight: 500;
+  --typo-label-small-letter-spacing: -0.128px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────
+   Base Reset & Typography
+───────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family-base);
+  font-size: var(--typo-body-medium-font-size);
+  line-height: var(--typo-body-medium-line-height);
+  color: var(--color-on-background);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* ─────────────────────────────────────────────
+   Auth Layout Utility
+───────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background-color: var(--color-background);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow:
+    0 1px 3px hsla(213, 49%, 12%, 0.06),
+    0 4px 16px hsla(213, 49%, 12%, 0.06);
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 32px 24px;
+    border-radius: 12px;
   }
+}
+
+/* ─────────────────────────────────────────────
+   Auth Card Header
+───────────────────────────────────────────── */
+
+.auth-card__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.auth-card__logo-mark {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-primary);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.auth-card__logo-mark svg {
+  color: var(--color-on-primary);
+}
+
+.auth-card__logo-text {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--color-on-surface);
+}
+
+.auth-card__heading {
+  font-size: var(--typo-headline-small-font-size);
+  font-weight: var(--typo-headline-small-font-weight);
+  letter-spacing: var(--typo-headline-small-letter-spacing);
+  line-height: var(--typo-headline-small-line-height);
+  color: var(--color-on-surface);
+  margin-bottom: 6px;
+}
+
+.auth-card__subheading {
+  font-size: var(--typo-body-medium-font-size);
+  line-height: var(--typo-body-medium-line-height);
+  color: var(--color-on-surface-variant);
+  margin-bottom: 28px;
+}
+
+/* ─────────────────────────────────────────────
+   Form Field System
+───────────────────────────────────────────── */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: var(--typo-label-small-font-size);
+  font-weight: var(--typo-label-small-font-weight);
+  letter-spacing: var(--typo-label-small-letter-spacing);
+  color: var(--color-on-surface);
+  user-select: none;
+}
+
+.field__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font-family: var(--font-family-base);
+  font-size: var(--typo-body-medium-font-size);
+  color: var(--color-on-surface);
+  background-color: var(--color-surface-container-lowest);
+  border: 1.5px solid var(--color-outline);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px hsla(221, 83%, 50%, 0.12);
+}
+
+.field__input--error {
+  border-color: var(--color-error-text);
+  background-color: var(--color-error-surface);
+}
+
+.field__input--error:focus {
+  box-shadow: 0 0 0 3px hsla(0, 72%, 42%, 0.12);
+}
+
+.field__input:disabled {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+  cursor: not-allowed;
+}
+
+/* Password input padding to avoid overlap with toggle button */
+.field__input--password {
+  padding-right: 48px;
+}
+
+.field__toggle-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--color-on-surface-variant);
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.field__toggle-btn:hover {
+  color: var(--color-on-surface);
+}
+
+.field__toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.field__error {
+  font-size: var(--typo-body-small-font-size);
+  line-height: var(--typo-body-small-line-height);
+  color: var(--color-error-text);
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+/* ─────────────────────────────────────────────
+   Password Strength Indicator
+───────────────────────────────────────────── */
+
+.strength {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.strength__bars {
+  display: flex;
+  gap: 4px;
+}
+
+.strength__bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 99px;
+  background-color: var(--color-outline-variant);
+  transition: background-color 0.2s ease;
+}
+
+.strength__bar--weak   { background-color: var(--color-strength-weak); }
+.strength__bar--fair   { background-color: var(--color-strength-fair); }
+.strength__bar--good   { background-color: var(--color-strength-good); }
+.strength__bar--strong { background-color: var(--color-strength-strong); }
+
+.strength__label {
+  font-size: var(--typo-body-small-font-size);
+  line-height: var(--typo-body-small-line-height);
+  font-weight: 500;
+}
+
+.strength__label--weak   { color: var(--color-strength-weak); }
+.strength__label--fair   { color: var(--color-strength-fair); }
+.strength__label--good   { color: var(--color-strength-good); }
+.strength__label--strong { color: var(--color-strength-strong); }
+
+/* ─────────────────────────────────────────────
+   Button System
+───────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  padding: 0 24px;
+  font-family: var(--font-family-base);
+  font-size: var(--typo-label-small-font-size);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  -webkit-appearance: none;
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: hsl(221, 83%, 44%);
+  box-shadow: 0 2px 8px hsla(221, 83%, 50%, 0.28);
+}
+
+.btn--primary:active:not(:disabled) {
+  background-color: hsl(221, 83%, 40%);
+}
+
+.btn--primary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid hsla(0, 0%, 100%, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─────────────────────────────────────────────
+   Alert / Feedback Banners
+───────────────────────────────────────────── */
+
+.alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: var(--typo-body-small-font-size);
+  line-height: var(--typo-body-small-line-height);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.alert--error {
+  background-color: var(--color-error-surface);
+  color: var(--color-error-text);
+  border: 1px solid var(--color-error-border);
+}
+
+.alert--success {
+  background-color: var(--color-success-surface);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success-border);
+}
+
+/* ─────────────────────────────────────────────
+   Form Footer — link row
+───────────────────────────────────────────── */
+
+.form-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: var(--typo-body-small-font-size);
+  color: var(--color-on-surface-variant);
+}
+
+.form-footer__link {
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.form-footer__link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+.form-footer__link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ─────────────────────────────────────────────
+   Forgot password row (inline with password label)
+───────────────────────────────────────────── */
+
+.field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─────────────────────────────────────────────
+   Divider
+───────────────────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background-color: var(--color-outline-variant);
+  margin: 4px 0;
+}
+
+/* ─────────────────────────────────────────────
+   Status page (verification, success states)
+───────────────────────────────────────────── */
+
+.status-card {
+  text-align: center;
+}
+
+.status-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+}
+
+.status-card__icon--success {
+  background-color: var(--color-success-surface);
+  color: var(--color-success-text);
+}
+
+.status-card__icon--error {
+  background-color: var(--color-error-surface);
+  color: var(--color-error-text);
+}
+
+.status-card__heading {
+  font-size: var(--typo-title-medium-font-size);
+  font-weight: var(--typo-title-medium-font-weight);
+  color: var(--color-on-surface);
+  margin-bottom: 8px;
+}
+
+.status-card__body {
+  font-size: var(--typo-body-medium-font-size);
+  color: var(--color-on-surface-variant);
+  margin-bottom: 24px;
+  line-height: 1.6;
 }

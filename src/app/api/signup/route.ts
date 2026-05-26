@@ -1,0 +1,96 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { SignUpSchema } from '@/lib/validations'
+import { hashPassword } from '@/lib/password'
+import { prisma } from '@/lib/prisma'
+import { createVerificationToken } from '@/lib/tokens'
+import { resend } from '@/lib/resend'
+import { VerificationEmail } from '@/components/emails/VerificationEmail'
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    
+    // Server-side validation using Zod
+    const parsed = SignUpSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { errors: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
+
+    const { name, email, password } = parsed.data
+    const lowercaseEmail = email.toLowerCase()
+
+    // Check if the user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: lowercaseEmail }
+    })
+
+    if (existingUser) {
+      // If the user exists but is unverified, resend the verification email 
+      // instead of returning an error. This improves UX, prevents account 
+      // fragmentation, and maintains security.
+      if (!existingUser.emailVerified) {
+        const token = await createVerificationToken(lowercaseEmail)
+        const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
+        
+        await resend.emails.send({
+          from: 'SecureGate <onboarding@resend.dev>',
+          to: lowercaseEmail,
+          subject: 'Verify your email address',
+          react: VerificationEmail({ verificationLink }),
+        })
+        
+        return NextResponse.json(
+          { message: 'Check your email to verify your account.' },
+          { status: 201 }
+        )
+      }
+      
+      return NextResponse.json(
+        { message: 'An account with this email already exists.' },
+        { status: 409 }
+      )
+    }
+
+    // New User Creation
+    const hashedPassword = await hashPassword(password)
+
+    await prisma.user.create({
+      data: { 
+        name, 
+        email: lowercaseEmail, 
+        password: hashedPassword,
+        emailVerified: null, // Unverified by default
+      },
+    })
+
+    const token = await createVerificationToken(lowercaseEmail)
+    const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
+        
+    await resend.emails.send({
+      from: 'SecureGate <onboarding@resend.dev>',
+      to: lowercaseEmail,
+      subject: 'Verify your email address',
+      react: VerificationEmail({ verificationLink }),
+    })
+
+    return NextResponse.json(
+      { message: 'Check your email to verify your account.' },
+      { status: 201 }
+    )
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { message: 'An account with this email already exists.' },
+        { status: 409 }
+      )
+    }
+
+    return NextResponse.json(
+      { message: 'Something went wrong. Please try again.' },
+      { status: 500 }
+    )
+  }
+}
