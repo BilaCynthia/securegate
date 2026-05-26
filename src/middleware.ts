@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   // 1. Session Existence Check (Authentication)
   // If the user has no JWT token, they are not logged in.
   if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/signup', request.url))
   }
 
   // 2. Verification State Check (Authorization)
