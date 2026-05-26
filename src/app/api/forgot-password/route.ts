@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       { message: 'If an account exists, a reset link has been sent.', resetLink: sent ? undefined : resetLink },
       { status: 200 }
     )
-  } catch (error) {
+  } catch {
     // We can return a 500 here if our infrastructure fails (e.g. DB down, Resend down).
     // The client handles this gracefully, maintaining enumeration resistance.
     return NextResponse.json(

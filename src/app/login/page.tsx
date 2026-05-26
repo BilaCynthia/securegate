@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { TextField } from '@/components/ui/TextField'
-import { PasswordField } from '@/components/ui/PasswordField'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 
@@ -93,7 +92,7 @@ export default function LoginPage() {
         </form>
 
         <p className="form-footer">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/signup" className="form-footer__link">Create one</Link>
         </p>
       </div>

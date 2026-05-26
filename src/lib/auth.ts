@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.emailVerified = (user as any).emailVerified ?? null
+        token.emailVerified = user.emailVerified ?? null
       }
       
       // Refresh emailVerified on subsequent requests for newly-verified users
@@ -73,8 +73,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).emailVerified = token.emailVerified as Date | null;
+        session.user.id = token.id;
+        session.user.emailVerified = token.emailVerified;
       }
       return session
     }

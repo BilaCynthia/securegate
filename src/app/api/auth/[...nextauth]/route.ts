@@ -3,13 +3,15 @@ import { authOptions } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/ratelimit'
 
+type RouteContext = { params: Record<string, string | string[]> }
+
 const handler = NextAuth(authOptions)
 
-export async function GET(req: NextRequest, ctx: any) {
+export async function GET(req: NextRequest, ctx: RouteContext) {
   return handler(req, ctx)
 }
 
-export async function POST(req: NextRequest, ctx: any) {
+export async function POST(req: NextRequest, ctx: RouteContext) {
   // Security Hardening: Rate limit the credentials callback BEFORE NextAuth processing.
   // This intercepts the brute-force attempt before NextAuth parses the body, 
   // hits the database, or runs expensive bcrypt comparisons.

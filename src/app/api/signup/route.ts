@@ -65,8 +65,8 @@ export async function POST(req: NextRequest) {
       { message: 'Check your email to verify your account.', verificationLink: sent ? undefined : verificationLink },
       { status: 201 }
     )
-  } catch (error: any) {
-    if (error?.code === 'P2002') {
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && (error as { code: string }).code === 'P2002') {
       return NextResponse.json(
         { message: 'An account with this email already exists.' },
         { status: 409 }

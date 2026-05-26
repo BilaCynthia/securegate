@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       { message: 'If an unverified account with this email exists, a new verification link has been sent.', verificationLink: sent ? undefined : verificationLink },
       { status: 200 }
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: 'Something went wrong. Please try again.' },
       { status: 500 }

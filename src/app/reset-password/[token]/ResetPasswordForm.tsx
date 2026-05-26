@@ -73,7 +73,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <LogoMark />
         <h1 className="auth-card__heading">Set new password</h1>
         <p className="auth-card__subheading">
-          Choose a strong password you haven't used before.
+          Choose a strong password you haven&apos;t used before.
         </p>
 
         {errorMessage && <Alert variant="error">{errorMessage}</Alert>}

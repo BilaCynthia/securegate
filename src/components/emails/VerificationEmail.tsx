@@ -30,7 +30,7 @@ export function VerificationEmail({ verificationLink }: VerificationEmailProps) 
             Verify Email
           </Button>
           <Text style={text}>
-            If the button doesn't work, copy and paste this URL into your browser:
+            If the button doesn&apos;t work, copy and paste this URL into your browser:
           </Text>
           <Text style={text}>{verificationLink}</Text>
           <Text style={text}>

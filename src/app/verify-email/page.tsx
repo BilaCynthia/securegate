@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LogoMark } from '@/components/ui/LogoMark'
 import { Alert } from '@/components/ui/Alert'
 
-export default function VerifyEmailPrompt() {
+function VerifyEmailPrompt() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') ?? ''
 
@@ -89,8 +89,16 @@ export default function VerifyEmailPrompt() {
           <Link href="/login" className="form-footer__link" style={{ display: 'inline-block', marginTop: '16px' }}>
             Back to Sign in
           </Link>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={null}>
+      <VerifyEmailPrompt />
+    </Suspense>
   )
 }

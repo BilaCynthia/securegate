@@ -33,7 +33,7 @@ export function PasswordResetEmail({ resetLink }: PasswordResetEmailProps) {
             This link will expire in 1 hour for your security.
           </Text>
           <Text style={text}>
-            If the button doesn't work, copy and paste this URL into your browser:
+            If the button doesn&apos;t work, copy and paste this URL into your browser:
           </Text>
           <Text style={text}>{resetLink}</Text>
           <Text style={text}>

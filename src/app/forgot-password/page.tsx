@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
         <LogoMark />
         <h1 className="auth-card__heading">Reset password</h1>
         <p className="auth-card__subheading">
-          Enter your email and we'll send you a reset link valid for 1 hour.
+          Enter your email and           we&apos;ll send you a reset link valid for 1 hour.
         </p>
 
         {status === 'sent' ? (
