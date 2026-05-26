@@ -1,12 +1,9 @@
-export async function sendVerificationEmail(to: string, verificationLink: string): Promise<void> {
+export async function sendVerificationEmail(to: string, verificationLink: string): Promise<boolean> {
   const resendConfigured = !!(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.length > 0)
 
   if (!resendConfigured) {
-    console.log('📧 [DEV MODE] Verification email not sent (RESEND_API_KEY not configured)')
-    console.log(`   To: ${to}`)
-    console.log(`   Verification link: ${verificationLink}`)
-    console.log(`   To test email verification, manually visit the link above.`)
-    return
+    logDevFallback('Verification', to, verificationLink)
+    return false
   }
 
   try {
@@ -19,23 +16,20 @@ export async function sendVerificationEmail(to: string, verificationLink: string
       subject: 'Verify your email address',
       html: createVerificationEmailHtml(verificationLink),
     })
+    return true
   } catch (error) {
-    console.error('Failed to send verification email:', error)
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`📧 [DEV FALLBACK] Verification link: ${verificationLink}`)
-    }
+    console.error('Failed to send verification email via Resend:', error)
+    logDevFallback('Verification', to, verificationLink)
+    return false
   }
 }
 
-export async function sendPasswordResetEmail(to: string, resetLink: string): Promise<void> {
+export async function sendPasswordResetEmail(to: string, resetLink: string): Promise<boolean> {
   const resendConfigured = !!(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.length > 0)
 
   if (!resendConfigured) {
-    console.log('📧 [DEV MODE] Password reset email not sent (RESEND_API_KEY not configured)')
-    console.log(`   To: ${to}`)
-    console.log(`   Reset link: ${resetLink}`)
-    console.log(`   To test password reset, manually visit the link above.`)
-    return
+    logDevFallback('Password reset', to, resetLink)
+    return false
   }
 
   try {
@@ -48,12 +42,18 @@ export async function sendPasswordResetEmail(to: string, resetLink: string): Pro
       subject: 'Reset your password',
       html: createPasswordResetEmailHtml(resetLink),
     })
+    return true
   } catch (error) {
-    console.error('Failed to send password reset email:', error)
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`📧 [DEV FALLBACK] Reset link: ${resetLink}`)
-    }
+    console.error('Failed to send password reset email via Resend:', error)
+    logDevFallback('Password reset', to, resetLink)
+    return false
   }
+}
+
+function logDevFallback(type: string, to: string, link: string) {
+  console.log(`📧 [DEV] ${type} email not delivered — manually visit the link to continue:`)
+  console.log(`   To: ${to}`)
+  console.log(`   Link: ${link}`)
 }
 
 function createVerificationEmailHtml(verificationLink: string): string {

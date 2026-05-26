@@ -1,7 +1,47 @@
+'use client'
+
+import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LogoMark } from '@/components/ui/LogoMark'
+import { Alert } from '@/components/ui/Alert'
 
 export default function VerifyEmailPrompt() {
+  const searchParams = useSearchParams()
+  const email = searchParams.get('email') ?? ''
+
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [devLink, setDevLink] = useState(searchParams.get('link') ?? '')
+
+  async function handleResend() {
+    setError(null)
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+      if (data.verificationLink) {
+        setDevLink(data.verificationLink)
+      }
+      if (res.ok) {
+        setSent(true)
+      } else {
+        setError(data.message ?? 'Something went wrong.')
+      }
+    } catch {
+      setError('Unable to connect. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <main className="auth-page">
       <div className="auth-card">
@@ -15,10 +55,38 @@ export default function VerifyEmailPrompt() {
           </div>
           <p className="status-card__heading">Check your email</p>
           <p className="status-card__body">
-            You need to verify your email before accessing the dashboard.
-            We've sent a verification link — check your inbox and spam folder.
+            We sent a verification link — check your inbox and spam folder.
           </p>
-          <Link href="/login" className="form-footer__link">
+
+          {error && <Alert variant="error">{error}</Alert>}
+
+          {devLink && (
+            <div style={{ marginTop: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '6px', fontSize: '13px', wordBreak: 'break-all' }}>
+              <strong>Dev mode:</strong> Email delivery unavailable.{' '}
+              <a href={devLink} style={{ color: 'var(--color-primary)' }}>Click here</a> or copy this link to verify:
+              <div style={{ marginTop: '4px', fontFamily: 'monospace' }}>{devLink}</div>
+            </div>
+          )}
+
+          {sent ? (
+            <p className="status-card__body" style={{ marginTop: '8px', color: 'var(--color-success)' }}>
+              Verification email resent!
+            </p>
+          ) : (
+            <p className="status-card__body" style={{ marginTop: '8px' }}>
+              Did not receive it?{' '}
+              <button
+                onClick={handleResend}
+                disabled={loading || !email}
+                className="form-footer__link"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 'inherit' }}
+              >
+                {loading ? 'Sending...' : 'Resend email'}
+              </button>
+            </p>
+          )}
+
+          <Link href="/login" className="form-footer__link" style={{ display: 'inline-block', marginTop: '16px' }}>
             Back to Sign in
           </Link>
         </div>

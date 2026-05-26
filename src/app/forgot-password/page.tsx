@@ -16,17 +16,22 @@ export default function ForgotPasswordPage() {
     setStatus('loading')
 
     try {
-      await fetch('/api/forgot-password', {
+      const res = await fetch('/api/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-      // Security: Always show success regardless of server response to prevent enumeration
+      const data = await res.json()
+      if (data.resetLink) {
+        setDevLink(data.resetLink)
+      }
       setStatus('sent')
     } catch {
       setStatus('error')
     }
   }
+
+  const [devLink, setDevLink] = useState('')
 
   return (
     <main className="auth-page">
@@ -48,6 +53,13 @@ export default function ForgotPasswordPage() {
             <p className="status-card__body">
               If an account exists for <strong>{email}</strong>, a password reset link has been sent.
             </p>
+            {devLink && (
+              <div style={{ marginTop: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '6px', fontSize: '13px', wordBreak: 'break-all' }}>
+                <strong>Dev mode:</strong> Email delivery unavailable.{' '}
+                <a href={devLink} style={{ color: 'var(--color-primary)' }}>Click here</a> or copy this link to reset:
+                <div style={{ marginTop: '4px', fontFamily: 'monospace' }}>{devLink}</div>
+              </div>
+            )}
             <Link href="/login" className="btn btn--primary" style={{ display: 'inline-flex', width: 'auto', padding: '0 24px' }}>
               Back to Sign in
             </Link>

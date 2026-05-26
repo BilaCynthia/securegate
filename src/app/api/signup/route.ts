@@ -27,17 +27,14 @@ export async function POST(req: NextRequest) {
     })
 
     if (existingUser) {
-      // If the user exists but is unverified, resend the verification email 
-      // instead of returning an error. This improves UX, prevents account 
-      // fragmentation, and maintains security.
       if (!existingUser.emailVerified) {
         const token = await createVerificationToken(lowercaseEmail)
         const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
         
-        await sendVerificationEmail(lowercaseEmail, verificationLink)
+        const sent = await sendVerificationEmail(lowercaseEmail, verificationLink)
         
         return NextResponse.json(
-          { message: 'Check your email to verify your account.' },
+          { message: 'Check your email to verify your account.', verificationLink: sent ? undefined : verificationLink },
           { status: 201 }
         )
       }
@@ -48,7 +45,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // New User Creation
     const hashedPassword = await hashPassword(password)
 
     await prisma.user.create({
@@ -56,17 +52,17 @@ export async function POST(req: NextRequest) {
         name, 
         email: lowercaseEmail, 
         password: hashedPassword,
-        emailVerified: null, // Unverified by default
+        emailVerified: null,
       },
     })
 
     const token = await createVerificationToken(lowercaseEmail)
     const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
         
-    await sendVerificationEmail(lowercaseEmail, verificationLink)
+    const sent = await sendVerificationEmail(lowercaseEmail, verificationLink)
 
     return NextResponse.json(
-      { message: 'Check your email to verify your account.' },
+      { message: 'Check your email to verify your account.', verificationLink: sent ? undefined : verificationLink },
       { status: 201 }
     )
   } catch (error: any) {

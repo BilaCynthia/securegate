@@ -29,10 +29,10 @@ export async function POST(req: NextRequest) {
     const token = await createVerificationToken(email)
     const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
     
-    await sendVerificationEmail(email, verificationLink)
+    const sent = await sendVerificationEmail(email, verificationLink)
 
     return NextResponse.json(
-      { message: 'If an unverified account with this email exists, a new verification link has been sent.' },
+      { message: 'If an unverified account with this email exists, a new verification link has been sent.', verificationLink: sent ? undefined : verificationLink },
       { status: 200 }
     )
   } catch (error) {

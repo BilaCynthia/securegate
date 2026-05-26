@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { LogoMark } from '@/components/ui/LogoMark'
 
@@ -70,25 +71,5 @@ export default async function VerifyEmailPage({
     prisma.verificationToken.delete({ where: { token } }),
   ])
 
-  return (
-    <main className="auth-page">
-      <div className="auth-card">
-        <LogoMark />
-        <div className="status-card">
-          <div className="status-card__icon status-card__icon--success" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 6L9 17l-5-5"/>
-            </svg>
-          </div>
-          <p className="status-card__heading">Email verified</p>
-          <p className="status-card__body">
-            Your email address has been verified successfully. You can now sign in.
-          </p>
-          <Link href="/login" className="btn btn--primary" style={{ display: 'inline-flex', width: 'auto', padding: '0 24px' }}>
-            Sign in
-          </Link>
-        </div>
-      </div>
-    </main>
-  )
+  redirect('/dashboard')
 }

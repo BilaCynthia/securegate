@@ -46,15 +46,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Generate Token and Save to DB (1 hour strict expiry)
     const token = await createPasswordResetToken(email)
     const resetLink = `${process.env.NEXTAUTH_URL}/reset-password/${token.token}`
 
-    // Send Email
-    await sendPasswordResetEmail(email, resetLink)
+    const sent = await sendPasswordResetEmail(email, resetLink)
 
     return NextResponse.json(
-      { message: 'If an account exists, a reset link has been sent.' },
+      { message: 'If an account exists, a reset link has been sent.', resetLink: sent ? undefined : resetLink },
       { status: 200 }
     )
   } catch (error) {
