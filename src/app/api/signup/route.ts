@@ -31,10 +31,10 @@ export async function POST(req: NextRequest) {
         const token = await createVerificationToken(lowercaseEmail)
         const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
         
-        const sent = await sendVerificationEmail(lowercaseEmail, verificationLink)
+        await sendVerificationEmail(lowercaseEmail, verificationLink)
         
         return NextResponse.json(
-          { message: 'Check your email to verify your account.', verificationLink: sent ? undefined : verificationLink },
+          { message: 'Check your email to verify your account.', verificationLink },
           { status: 201 }
         )
       }
@@ -59,10 +59,10 @@ export async function POST(req: NextRequest) {
     const token = await createVerificationToken(lowercaseEmail)
     const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email/${token.token}`
         
-    const sent = await sendVerificationEmail(lowercaseEmail, verificationLink)
+    await sendVerificationEmail(lowercaseEmail, verificationLink)
 
     return NextResponse.json(
-      { message: 'Check your email to verify your account.', verificationLink: sent ? undefined : verificationLink },
+      { message: 'Check your email to verify your account.', verificationLink },
       { status: 201 }
     )
   } catch (error: unknown) {
